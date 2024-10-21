@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kurniawanxzy/backend-olshop/domain/entities"
-	"github.com/kurniawanxzy/backend-olshop/helper"
-	"github.com/kurniawanxzy/backend-olshop/repository"
-	"github.com/kurniawanxzy/backend-olshop/requests"
+	"github.com/deecodeid/api_nowted/domain/entities"
+	"github.com/deecodeid/api_nowted/helper"
+	"github.com/deecodeid/api_nowted/repository"
+	"github.com/deecodeid/api_nowted/requests"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type AuthService struct {
-	db *gorm.DB
-	UserRepository *repository.UserRepository
+	db                          *gorm.DB
+	UserRepository              *repository.UserRepository
 	TokenVerificationRepository *repository.TokenVerificationRepository
 }
 
@@ -27,11 +27,10 @@ func (s *AuthService) RegisterUser(data *entities.User) error {
 		return fmt.Errorf("missing db connection")
 	}
 	return s.db.Transaction(func(tx *gorm.DB) error {
-
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		data.Password = string(hashedPassword)
 
@@ -41,12 +40,11 @@ func (s *AuthService) RegisterUser(data *entities.User) error {
 		}
 
 		token, err := s.TokenVerificationRepository.GenerateToken(data.ID.String(), "email_verification")
-
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
-		helper.SendEmail(data.Email, "Email Verification", fmt.Sprintf("<h1>%s</h1>",token))
+		helper.SendEmail(data.Email, "Email Verification", fmt.Sprintf("<h1>%s</h1>", token))
 
 		return nil
 	})
@@ -58,8 +56,7 @@ func (s *AuthService) VerifyUser(token, email string) error {
 	}
 
 	return s.db.Transaction(func(tx *gorm.DB) error {
-		tokenVerification, err:= s.TokenVerificationRepository.FindToken(token, email)
-
+		tokenVerification, err := s.TokenVerificationRepository.FindToken(token, email)
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -90,8 +87,7 @@ func (s *AuthService) VerifyUser(token, email string) error {
 			return fmt.Errorf("user already verified")
 		}
 
-		user , err := s.UserRepository.FindByEmail(tokenVerification.User.Email)
-		
+		user, err := s.UserRepository.FindByEmail(tokenVerification.User.Email)
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -121,7 +117,6 @@ func (s *AuthService) CreateToken(email, tokenType string) error {
 	}
 
 	return s.db.Transaction(func(tx *gorm.DB) error {
-
 		user, err := s.UserRepository.FindByEmail(email)
 
 		if user == nil {
@@ -135,7 +130,6 @@ func (s *AuthService) CreateToken(email, tokenType string) error {
 		}
 
 		tokenLatest, err := s.TokenVerificationRepository.FindLatestToken(user.ID.String())
-		
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -145,15 +139,14 @@ func (s *AuthService) CreateToken(email, tokenType string) error {
 			tx.Rollback()
 			return fmt.Errorf("token still valid")
 		}
-		
-		token, err := s.TokenVerificationRepository.GenerateToken(user.ID.String(), tokenType)
 
+		token, err := s.TokenVerificationRepository.GenerateToken(user.ID.String(), tokenType)
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
 
-		helper.SendEmail(user.Email, "Email Verification", fmt.Sprintf("<h1>%s</h1>",token))
+		helper.SendEmail(user.Email, "Email Verification", fmt.Sprintf("<h1>%s</h1>", token))
 
 		return nil
 	})
@@ -161,35 +154,32 @@ func (s *AuthService) CreateToken(email, tokenType string) error {
 
 func (s *AuthService) Login(data *requests.LoginRequest) (string, error) {
 	if s.db == nil {
-		return "",fmt.Errorf("missing db connection")
+		return "", fmt.Errorf("missing db connection")
 	}
 
 	user, err := s.UserRepository.FindByEmail(data.Email)
-
 	if err != nil {
-		return "",err
+		return "", err
 	}
 
 	if user == nil {
-		return "",fmt.Errorf("invalid credentials")
+		return "", fmt.Errorf("invalid credentials")
 	}
 
 	if !user.IsVerified {
-		return "",fmt.Errorf("user not verified")
+		return "", fmt.Errorf("user not verified")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(data.Password)); err != nil {
-		return "",fmt.Errorf("invalid credentials")
+		return "", fmt.Errorf("invalid credentials")
 	}
-
 
 	token, err := helper.GenerateJWT(user)
-
 	if err != nil {
-		return "",err
+		return "", err
 	}
 
-	return token,nil
+	return token, nil
 }
 
 func (s *AuthService) ResetPassword(data *requests.ResetPasswordRequest, user *entities.User) error {
@@ -198,14 +188,12 @@ func (s *AuthService) ResetPassword(data *requests.ResetPasswordRequest, user *e
 	}
 
 	return s.db.Transaction(func(tx *gorm.DB) error {
-
 		if user == nil {
 			tx.Rollback()
 			return fmt.Errorf("user not found")
 		}
-		
-		token, err := s.TokenVerificationRepository.FindToken(data.Token, user.Email)
 
+		token, err := s.TokenVerificationRepository.FindToken(data.Token, user.Email)
 		if err != nil {
 			tx.Rollback()
 			return err

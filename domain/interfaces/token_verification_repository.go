@@ -1,7 +1,6 @@
 package interfaces
 
-import "github.com/kurniawanxzy/backend-olshop/domain/entities"
-
+import "github.com/deecodeid/api_nowted/domain/entities"
 
 type TokenVerificationRepository interface {
 	GenerateToken(userId string, tokeType string) string

@@ -1,8 +1,7 @@
 package repository
 
 import (
-
-	"github.com/kurniawanxzy/backend-olshop/domain/entities"
+	"github.com/deecodeid/api_nowted/domain/entities"
 	"gorm.io/gorm"
 )
 

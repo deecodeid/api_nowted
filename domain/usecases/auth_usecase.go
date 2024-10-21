@@ -1,9 +1,9 @@
 package usecases
 
 import (
-	"github.com/kurniawanxzy/backend-olshop/domain/entities"
-	"github.com/kurniawanxzy/backend-olshop/requests"
-	"github.com/kurniawanxzy/backend-olshop/service"
+	"github.com/deecodeid/api_nowted/domain/entities"
+	"github.com/deecodeid/api_nowted/requests"
+	"github.com/deecodeid/api_nowted/service"
 )
 
 type AuthUseCase struct {
@@ -26,7 +26,7 @@ func (uc *AuthUseCase) CreateToken(email, tokenType string) error {
 	return uc.authService.CreateToken(email, tokenType)
 }
 
-func (uc *AuthUseCase) Login(data *requests.LoginRequest) (string,error) {
+func (uc *AuthUseCase) Login(data *requests.LoginRequest) (string, error) {
 	return uc.authService.Login(data)
 }
 

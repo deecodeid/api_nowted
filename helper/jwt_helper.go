@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/deecodeid/api_nowted/config"
+	"github.com/deecodeid/api_nowted/domain/entities"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kurniawanxzy/backend-olshop/config"
-	"github.com/kurniawanxzy/backend-olshop/domain/entities"
 )
 
 type Claims struct {
@@ -39,7 +39,6 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.ENV.JWTSecret), nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -50,9 +49,6 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 
 	return claims, nil
 }
-
-
-
 
 func GetUser(c *fiber.Ctx) (*Claims, error) {
 	authHeader := c.Get("Authorization")

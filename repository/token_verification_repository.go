@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/kurniawanxzy/backend-olshop/domain/entities"
+	"github.com/deecodeid/api_nowted/domain/entities"
 	"gorm.io/gorm"
 )
 
@@ -26,12 +26,12 @@ func (r *TokenVerificationRepository) GenerateToken(userId, tokenType string) (s
 func (r *TokenVerificationRepository) FindToken(token, email string) (*entities.TokenVerification, error) {
 	var tokenVerification entities.TokenVerification
 
-    if err := r.db.Preload("User").
-        Where("token = ? AND user_id = (SELECT id FROM users WHERE email = ?)", token, email).
-        Order("created_at desc").
-        First(&tokenVerification).Error; err != nil {
-        return nil, err
-    }
+	if err := r.db.Preload("User").
+		Where("token = ? AND user_id = (SELECT id FROM users WHERE email = ?)", token, email).
+		Order("created_at desc").
+		First(&tokenVerification).Error; err != nil {
+		return nil, err
+	}
 	return &tokenVerification, nil
 }
 

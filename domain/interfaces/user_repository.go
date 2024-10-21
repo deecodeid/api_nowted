@@ -1,6 +1,6 @@
 package interfaces
 
-import "github.com/kurniawanxzy/backend-olshop/domain/entities"
+import "github.com/deecodeid/api_nowted/domain/entities"
 
 type UserRepository interface {
 	CreateUser(user *entities.User) error

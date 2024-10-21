@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kurniawanxzy/backend-olshop/config"
-	"github.com/kurniawanxzy/backend-olshop/domain/entities"
+	"github.com/deecodeid/api_nowted/config"
+	"github.com/deecodeid/api_nowted/domain/entities"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
